@@ -6,35 +6,35 @@
 
 package studio.ui;
 
-import studio.kdb.*;
-import studio.utils.OSXAdapter;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-import kx.c;
-import org.netbeans.editor.*;
-import org.netbeans.editor.Utilities;
-import org.netbeans.editor.ext.ExtKit;
-import org.netbeans.editor.ext.ExtSettingsInitializer;
-
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileView;
-import javax.swing.table.TableModel;
-import javax.swing.text.*;
-import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileView;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
+import javax.swing.table.TableModel;
+import javax.swing.text.*;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
+import kx.c;
+import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
+import org.netbeans.editor.*;
+import org.netbeans.editor.Utilities;
 import org.netbeans.editor.example.QKit;
+import org.netbeans.editor.ext.ExtKit;
+import org.netbeans.editor.ext.ExtSettingsInitializer;
 import org.netbeans.editor.ext.q.QSettingsInitializer;
+import studio.core.FilterComboBox;
+import studio.kdb.*;
 import studio.utils.BrowserLaunch;
+import studio.utils.OSXAdapter;
 import studio.utils.SwingWorker;
-
 public class Studio extends JPanel implements Observer,WindowListener {
     static {
         // Register us
@@ -1583,12 +1583,12 @@ public class Studio extends JPanel implements Observer,WindowListener {
         if (toolbar != null) {
             toolbar.removeAll();
 
-            String[] names = Config.getInstance().getServerNames();
+            final String[] names = Config.getInstance().getServerNames();
 
             if ((names != null) && (names.length > 0)) {
                 toolbar.add(new JLabel(I18n.getString("Server")));
 
-                JComboBox combo = new JComboBox(names) {
+                JComboBox combo = new FilterComboBox(Arrays.asList(names)) {
                     
                     public Dimension getMinimumSize() {
                         return getPreferredSize();
@@ -1599,7 +1599,11 @@ public class Studio extends JPanel implements Observer,WindowListener {
                         return getPreferredSize();
                     }
                 };
-
+                
+             
+               
+               
+            //    AutoCompleteDecorator.decorate(combo);
                 int offset = Config.getInstance().getOffset(server);
 
                 if (offset == -1) {
@@ -1610,7 +1614,7 @@ public class Studio extends JPanel implements Observer,WindowListener {
 
                     offset = 0;
                 }
-
+                combo.setEditable(true);
                 combo.setSelectedIndex(offset);
                 combo.setToolTipText("Select the server context");
 
@@ -1620,11 +1624,15 @@ public class Studio extends JPanel implements Observer,WindowListener {
                     
                     public void actionPerformed(ActionEvent e) {
                         String selection = (String) ((JComboBox) e.getSource()).getSelectedItem();
-
-                        setServer(Config.getInstance().getServer(selection));
-
+                      
+                        for(int i = 0; i < names.length ;i++){
+                            if(names[i].equals(selection)){
+                                  setServer(Config.getInstance().getServer(selection));
+                            }
+                        }
+                      
                         //  setLanguage(Language.Q);
-
+/*
                         SwingUtilities.invokeLater(new Runnable() {
                             
                                                    public void run() {
@@ -1632,7 +1640,7 @@ public class Studio extends JPanel implements Observer,WindowListener {
                                                        toolbar.validate();
                                                        toolbar.repaint();
                                                    }
-                                               });
+                                               });*/
                     }
                 };
 
