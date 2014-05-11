@@ -1578,7 +1578,7 @@ public class Studio extends JPanel implements Observer,WindowListener {
         f.setExtendedState(state);
         f.show();
     }
-
+    JComboBox currentCombo = null;
     private void rebuildToolbar() {
         if (toolbar != null) {
             toolbar.removeAll();
@@ -1599,12 +1599,9 @@ public class Studio extends JPanel implements Observer,WindowListener {
                         return getPreferredSize();
                     }
                 };
-                
-             
-               
-               
-            //    AutoCompleteDecorator.decorate(combo);
-                int offset = Config.getInstance().getOffset(server);
+                currentCombo = combo;
+     
+               int offset = Config.getInstance().getOffset(server);
 
                 if (offset == -1) {
                     Server[] servers = Config.getInstance().getServers();
@@ -1771,11 +1768,31 @@ public class Studio extends JPanel implements Observer,WindowListener {
         splitpane.setDividerLocation(0.5);
     }
 
+     private class MyDispatcher implements KeyEventDispatcher {
+        private Studio studio = null;
+         public MyDispatcher(Studio studio){
+             this.studio = studio;
+         }
+        @Override
+        public boolean dispatchKeyEvent(KeyEvent e) {
+                if (e.getID() == KeyEvent.KEY_PRESSED) {
+                      if(e.getModifiers() == KeyEvent.CTRL_MASK && e.getKeyCode() == 'L'){
+                          if(this.studio.currentCombo != null){
+                              this.studio.currentCombo.requestFocus();;
+                          }
+                        }
+                     
+                }
+                return false;
+        }
+         
+     }
     public Studio(Server server,String filename) {
         super(true);
 
         registerForMacOSXEvents();
-
+        KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        manager.addKeyEventDispatcher(new MyDispatcher(this));
         windowListChangedEventListener = new WindowListChangedEventListener() {
             
             public void WindowListChangedEventOccurred(WindowListChangedEvent evt) {
@@ -1789,7 +1806,7 @@ public class Studio extends JPanel implements Observer,WindowListener {
         splitpane = new JSplitPane();
         frame = new JFrame();
         windowList.add(this);
-
+        
         initDocument();
         setServer(server);
 
