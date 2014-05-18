@@ -8,19 +8,29 @@ package studio.core;
 
 import java.awt.Font;
 import java.util.Locale;
-import studio.kdb.Config;
-import studio.kdb.Lm;
-import studio.ui.ExceptionGroup;
-import studio.ui.Studio;
-
 import java.util.TimeZone;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleConstants;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.CommandLine;
+import studio.kdb.Config;
+import studio.kdb.Lm;
+import studio.ui.ExceptionGroup;
 import studio.ui.LicensePanel;
+import studio.ui.Studio;
+
 
 public class EntryPoint {
+   public static Options constructGnuOptions()
+   {
+      final Options gnuOptions = new Options();
+      gnuOptions.addOption("servers", "serverFile", true, "Option for printing");
+      return gnuOptions;
+   }
     public static void main(final String[] args) {
         TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 
@@ -42,7 +52,16 @@ public class EntryPoint {
                 ex.printStackTrace();
             }
         }
-
+        final CommandLineParser cmdLineGnuParser = new GnuParser();
+        try{
+            CommandLine commandLine = cmdLineGnuParser.parse(constructGnuOptions(), args);
+            if(commandLine.hasOption("servers")){
+                String fileName = commandLine.getOptionValue("servers");
+                Config.getInstance().loadFromFile(fileName);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         studio.ui.I18n.setLocale(Locale.getDefault());
 
      //   studio.ui.I18n.setLocale(new Locale("zh", "cn"));

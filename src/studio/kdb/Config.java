@@ -26,6 +26,35 @@ public class Config
     private static Config instance;
     private static NumberFormat formatter= null;
 
+    public void loadFromFile(String filename){
+        try{
+            
+            FileInputStream in = new FileInputStream(filename);
+            Properties temp = new Properties();
+
+            temp.load(in);
+            String newServers = temp.getProperty("Servers");
+            String oldServers = p.getProperty("Servers");
+            HashSet<String> sets = new HashSet<String>();
+            sets.addAll(Arrays.asList(oldServers.split(",")));
+            sets.addAll(Arrays.asList(newServers.split(",")));
+            StringBuilder nb = new StringBuilder();
+            Object[] outcomeServer = (Object[])sets.toArray();
+            for(int i = 0; i < outcomeServer.length - 1; i++){
+                 nb.append(outcomeServer[i]);
+                 nb.append(",");
+            }
+            nb.append(outcomeServer[outcomeServer.length - 1]);
+            
+            p.putAll(temp);
+            p.put("Servers", nb.toString());
+          
+        }catch(Exception e){
+            System.out.println("HMMMMMMM");
+            e.printStackTrace();
+        }
+        
+    }
     private Config()
     {
         init();
