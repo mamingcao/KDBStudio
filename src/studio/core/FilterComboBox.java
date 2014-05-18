@@ -32,22 +32,35 @@ public class FilterComboBox extends JComboBox {
 
     public FilterComboBox(List<String> array) {
         super(array.toArray());
+        
         this.array = array;
         this.setEditable(true);
         final JTextField textfield = (JTextField) this.getEditor().getEditorComponent();
         textfield.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent ke) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        currentCaretPosition=textfield.getCaretPosition();
-                        if(textfield.getSelectedText()==null)
-                        {
-                        textfield.setCaretPosition(0);
-                        comboFilter(textfield.getText());
-                        textfield.setCaretPosition(currentCaretPosition);
-                        }
-                     }
-                });
+            public void keyPressed(KeyEvent key) {
+                if(key.getKeyCode() == KeyEvent.VK_DOWN){
+                    
+                }else if(key.getKeyCode() == KeyEvent.VK_UP){
+                  
+                }else if(key.getKeyCode() == KeyEvent.VK_LEFT){
+                    
+                }else if(key.getKeyCode() == KeyEvent.VK_RIGHT){
+                    
+                }
+                else{
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+
+                            currentCaretPosition=textfield.getCaretPosition();
+                            if(textfield.getSelectedText()==null)
+                            {
+                                textfield.setCaretPosition(0);
+                                comboFilter(textfield.getText());
+                                textfield.setCaretPosition(currentCaretPosition);
+                            }
+                         }
+                    });
+                }
             }
 
         });
